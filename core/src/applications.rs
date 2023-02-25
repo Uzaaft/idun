@@ -4,7 +4,7 @@ use icrate::{
     Foundation::NSArray,
 };
 
-type IdArray<T, O = Shared> = Id<NSArray<T, O>, O>;
+use crate::types::{IdArray, IdObject};
 
 fn get_running_applications() -> IdArray<NSRunningApplication> {
     let ws = unsafe { icrate::AppKit::NSWorkspace::sharedWorkspace() };
@@ -25,7 +25,7 @@ pub fn get_active_applications() -> IdArray<NSRunningApplication> {
     active_apps
 }
 
-pub fn get_focused_app() -> Id<NSRunningApplication, Shared> {
+pub fn get_focused_app() -> IdObject<NSRunningApplication> {
     unsafe {
         NSWorkspace::sharedWorkspace()
             .as_ref()
