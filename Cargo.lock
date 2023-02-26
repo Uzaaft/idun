@@ -3,13 +3,6 @@
 version = 3
 
 [[package]]
-name = "app"
-version = "0.0.0"
-dependencies = [
- "icrate",
-]
-
-[[package]]
 name = "block-sys"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -29,6 +22,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "core"
+version = "0.0.0"
+dependencies = [
+ "icrate",
+]
+
+[[package]]
 name = "icrate"
 version = "0.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -36,6 +36,14 @@ checksum = "b9a9660e2268e6b80b12149081539a9115d43826c1bb2539328604277385b537"
 dependencies = [
  "block2",
  "objc2",
+]
+
+[[package]]
+name = "idun"
+version = "0.0.0"
+dependencies = [
+ "core",
+ "icrate",
 ]
 
 [[package]]
