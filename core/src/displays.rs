@@ -1,11 +1,13 @@
-use icrate::AppKit::NSScreen;
+use icrate::{
+    objc2::rc::{Id, Shared},
+    AppKit::NSScreen,
+    Foundation::NSArray,
+};
 
-use crate::types::{IdArray, IdObject};
-
-pub fn get_all_screens() -> IdArray<NSScreen> {
+pub fn get_all_screens() -> Id<NSArray<NSScreen, Shared>, Shared> {
     unsafe { NSScreen::screens() }
 }
 
-pub fn get_focused_screen() -> IdObject<NSScreen> {
+pub fn get_focused_screen() -> Id<NSScreen, Shared> {
     unsafe { NSScreen::mainScreen().unwrap() }
 }

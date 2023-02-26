@@ -6,13 +6,13 @@ use icrate::{
 
 use crate::types::{IdArray, IdObject};
 
-fn get_running_applications() -> IdArray<NSRunningApplication> {
+fn get_running_applications() -> Id<NSArray<NSRunningApplication, Shared>, Shared> {
     let ws = unsafe { icrate::AppKit::NSWorkspace::sharedWorkspace() };
     let running_applications = unsafe { ws.as_ref().runningApplications() };
     running_applications
 }
 
-pub fn get_active_applications() -> IdArray<NSRunningApplication> {
+pub fn get_active_applications() -> Id<NSArray<NSRunningApplication, Shared>, Shared> {
     // PERF: This should be iter and a map/filter instead of a for loop
     let mut active_apps: IdArray<NSRunningApplication> = IdArray::default();
     for running_app in get_running_applications().iter() {
