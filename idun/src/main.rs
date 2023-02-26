@@ -1,6 +1,5 @@
-// Use the icrate to move a window around the screen
-use icrate;
-
 fn main() {
-    let int = icrate::AppKit::NSWindowNumberListOptions;
+    dbg!(core::applications::get_focused_app());
+    dbg!(core::displays::get_all_screens());
+    dbg!(core::displays::get_focused_screen());
 }
