@@ -1,5 +1,9 @@
+use clap::Parser;
+
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {}
 fn main() {
-    dbg!(core::applications::get_focused_app());
-    dbg!(core::displays::get_all_screens());
-    dbg!(core::displays::get_focused_screen());
+    let args = Args::parse();
+    println!("{:?}", args);
 }
