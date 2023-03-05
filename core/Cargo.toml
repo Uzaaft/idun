@@ -14,4 +14,4 @@ serde_json = "1.0"
 
 [dependencies.icrate]
 version = "*"
-features = ["AppKit", "AppKit_all", "AppKit_NSWorkspace", "Foundation_NSArray"]
+features = ["AppKit", "AppKit_all"]
