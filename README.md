@@ -10,6 +10,7 @@ Idun is a tiling window manager for macOS, written in Rust with a focus on perfo
 - Customizable key bindings for easy navigation and window management
 - Dynamic resizing and repositioning of windows for a flexible and intuitive workspace
 - Support for multiple displays for improved productivity and workflow
+- A hotkey demon(WIP). See the readme in the heimdall folder.
 
 ## Installation
 

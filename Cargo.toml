@@ -1,2 +1,9 @@
 [workspace]
-members = ["core", "idun"]
+members = ["core", "idun", "bindings"]
+exclude = ["heimdall", "idun-test"]
+
+[profile.optimized]
+inherits = "release"
+codegen-units = 1
+strip = "symbols"
+lto = "fat"
