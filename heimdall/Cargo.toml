@@ -18,3 +18,9 @@ winit = "0.28.2"
 [dependencies.clap]
 version = "4.1.8"
 features = ["derive"]
+
+[profile.optimized]
+inherits = "release"
+codegen-units = 1
+strip = "symbols"
+lto = "fat"
