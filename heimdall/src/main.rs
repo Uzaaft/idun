@@ -23,16 +23,16 @@ fn read_config() -> Result<config::Config> {
     Ok(config::Config::from_str(&config_file)?)
 }
 
-fn register_keys() -> Result<(GlobalHotKeyManager, HashMap<HotKey, String>)> {
+fn register_keys() -> Result<(GlobalHotKeyManager, HashMap<u32, String>)> {
     let user_config = read_config()?;
     let hotkeys_manager = GlobalHotKeyManager::new().unwrap();
-    let key_command_map: HashMap<HotKey, String> = user_config
+    let key_command_map = user_config
         .bindings
         .iter()
         .map(|hotkey| {
             let key: HotKey = hotkey.to_string().parse().unwrap();
             hotkeys_manager.register(key).unwrap();
-            (key, hotkey.command.to_string())
+            (key.id(), hotkey.command.to_string())
         })
         .collect();
     Ok((hotkeys_manager, key_command_map))
@@ -43,11 +43,12 @@ fn main() -> Result<()> {
 
     let global_hotkey_channel = GlobalHotKeyEvent::receiver();
     let (hotkeys_manager, key_command_map) = register_keys()?;
-
     event_loop.run(move |_event, _, control_flow| {
         // Just print registered hotkeys for now
         if let Ok(event) = global_hotkey_channel.try_recv() {
-            println!("{event:?}");
+            println!("Hotkey pressed: {:?}", event);
+            println!("Hotkey command: {:?}", key_command_map.get(&event.id));
+            dbg!(key_command_map.get(&event.id));
         }
     });
     Ok(())
