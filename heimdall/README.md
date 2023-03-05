@@ -17,6 +17,16 @@ To get started, simply clone the whole repository, and build it with Rust:
 ## Getting started
 To get started with Idun, follow these steps:
 
-1. Start heimdall with the `cargo run` command
-2. Use the default key bindings to navigate and manage your windows. For example, use `mod + j` and `mod + k` to move between windows, and use `mod + h` and `mod + l` to adjust the size of your windows.
-
+1. Create a config file with the path `$XDG_CONFIG_HOME/heimdall/config.toml`
+    The config file has the following format:
+    ```toml
+     [[bindings]]
+        key = "C"
+        modifiers = ["Ctrl", "Shift"]
+        command = "echo hello"
+        [[bindings]]
+        key = "D"
+        modifiers = ["Ctrl"]
+        command = "echo hello"
+    ```
+2. Start heimdall with the `cargo run` command
