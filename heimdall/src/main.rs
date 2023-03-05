@@ -44,7 +44,8 @@ fn main() -> Result<()> {
     let global_hotkey_channel = GlobalHotKeyEvent::receiver();
     let (hotkeys_manager, key_command_map) = register_keys()?;
     event_loop.run(move |_event, _, control_flow| {
-        // Just print registered hotkeys for now
+        control_flow.set_wait();
+
         if let Ok(event) = global_hotkey_channel.try_recv() {
             println!("Hotkey pressed: {:?}", event);
             println!("Hotkey command: {:?}", key_command_map.get(&event.id));
