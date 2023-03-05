@@ -6,7 +6,7 @@ use icrate::{
 
 use crate::types::{IdArray, IdObject};
 
-fn get_running_applications() -> Id<NSArray<NSRunningApplication, Shared>, Shared> {
+pub fn get_running_applications() -> Id<NSArray<NSRunningApplication, Shared>, Shared> {
     let ws = unsafe { icrate::AppKit::NSWorkspace::sharedWorkspace() };
     let running_applications = unsafe { ws.as_ref().runningApplications() };
     running_applications
