@@ -4,7 +4,7 @@
 
 mod config;
 
-use std::{collections::HashMap, str::FromStr};
+use std::{collections::HashMap, process::Command, str::FromStr};
 
 use anyhow::Result;
 use global_hotkey::{
@@ -48,7 +48,12 @@ fn main() -> Result<()> {
         if let Ok(event) = global_hotkey_channel.try_recv() {
             println!("Hotkey pressed: {:?}", event);
             println!("Hotkey command: {:?}", key_command_map.get(&event.id));
-            dbg!(key_command_map.get(&event.id));
+            // Run the command in the shell
+            Command::new("sh")
+                .arg("-c")
+                .arg(key_command_map.get(&event.id).unwrap())
+                .spawn()
+                .unwrap();
         }
     });
     Ok(())
