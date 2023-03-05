@@ -4,27 +4,15 @@
 
 mod config;
 
-use std::{collections::HashMap, process::Command, str::FromStr};
+use config::Config;
+use std::{collections::HashMap, process::Command};
 
 use anyhow::Result;
-use global_hotkey::{
-    hotkey::{Code, HotKey, Modifiers},
-    GlobalHotKeyEvent, GlobalHotKeyManager,
-};
-use winit::event_loop::{ControlFlow, EventLoopBuilder};
+use global_hotkey::{hotkey::HotKey, GlobalHotKeyEvent, GlobalHotKeyManager};
+use winit::event_loop::EventLoopBuilder;
 
-// Read config file from XDG_CONFIG_HOME. Fallback to ~/.config/heimdall/config.toml
-// TODO: Add better error handling
-fn read_config() -> Result<config::Config> {
-    let config_path = std::env::var("XDG_CONFIG_HOME")
-        .unwrap_or_else(|_| format!("{}/.config", std::env::var("HOME").unwrap()))
-        + "/heimdall/config.toml";
-    let config_file = std::fs::read_to_string(config_path)?.to_string();
-    Ok(config::Config::from_str(&config_file)?)
-}
-
-fn register_keys() -> Result<(GlobalHotKeyManager, HashMap<u32, String>)> {
-    let user_config = read_config()?;
+fn register_keys() -> Result<HashMap<u32, String>> {
+    let user_config = Config::read_config()?;
     let hotkeys_manager = GlobalHotKeyManager::new().unwrap();
     let key_command_map = user_config
         .bindings
@@ -35,14 +23,14 @@ fn register_keys() -> Result<(GlobalHotKeyManager, HashMap<u32, String>)> {
             (key.id(), hotkey.command.to_string())
         })
         .collect();
-    Ok((hotkeys_manager, key_command_map))
+    Ok(key_command_map)
 }
 
 fn main() -> Result<()> {
     let event_loop = EventLoopBuilder::new().build();
 
     let global_hotkey_channel = GlobalHotKeyEvent::receiver();
-    let (hotkeys_manager, key_command_map) = register_keys()?;
+    let key_command_map = register_keys()?;
     event_loop.run(move |_event, _, control_flow| {
         control_flow.set_wait();
 
@@ -56,6 +44,5 @@ fn main() -> Result<()> {
                 .spawn()
                 .unwrap();
         }
-    });
-    Ok(())
+    })
 }
