@@ -8,17 +8,20 @@ use config::Config;
 use std::{collections::HashMap, process::Command};
 
 use anyhow::Result;
-use global_hotkey::{hotkey::HotKey, GlobalHotKeyEvent, GlobalHotKeyManager};
-use winit::event_loop::EventLoopBuilder;
+use global_hotkey::{
+    hotkey::{Code, HotKey},
+    GlobalHotKeyEvent, GlobalHotKeyManager,
+};
+use winit::event_loop::{ControlFlow, EventLoopBuilder};
 
-fn register_keys() -> Result<HashMap<u32, String>> {
+fn register_keys(hotkeys_manager: GlobalHotKeyManager) -> Result<HashMap<u32, String>> {
     let user_config = Config::read_config()?;
-    let hotkeys_manager = GlobalHotKeyManager::new().unwrap();
     let key_command_map = user_config
         .bindings
         .iter()
         .map(|hotkey| {
             let key: HotKey = hotkey.to_string().parse().unwrap();
+            dbg!(&key);
             hotkeys_manager.register(key).unwrap();
             (key.id(), hotkey.command.to_string())
         })
@@ -26,23 +29,37 @@ fn register_keys() -> Result<HashMap<u32, String>> {
     Ok(key_command_map)
 }
 
-fn main() -> Result<()> {
+fn main() {
     let event_loop = EventLoopBuilder::new().build();
 
+    let hotkeys_manager = GlobalHotKeyManager::new().unwrap();
+
+    let hotkey3 = HotKey::new(None, Code::KeyE);
+    let user_config = Config::read_config().unwrap();
+    let key_command_map: HashMap<u32, String> = user_config
+        .bindings
+        .iter()
+        .map(|hotkey| {
+            let key: HotKey = hotkey.to_string().parse().unwrap();
+            dbg!(&key);
+            hotkeys_manager.register(key).unwrap();
+            (key.id(), hotkey.command.to_string())
+        })
+        .collect();
+
     let global_hotkey_channel = GlobalHotKeyEvent::receiver();
-    let key_command_map = register_keys()?;
+
     event_loop.run(move |_event, _, control_flow| {
-        control_flow.set_wait();
+        *control_flow = ControlFlow::Poll;
 
         if let Ok(event) = global_hotkey_channel.try_recv() {
-            println!("Hotkey pressed: {:?}", event);
-            println!("Hotkey command: {:?}", key_command_map.get(&event.id));
-            // Run the command in the shell
+            println!("Received hotkey event: {:?}", event);
+            println!("Command: {:?}", key_command_map.get(&event.id));
             Command::new("sh")
                 .arg("-c")
-                .arg(key_command_map.get(&event.id).unwrap())
+                .arg(key_command_map.get(&event.id).unwrap().to_string())
                 .spawn()
-                .unwrap();
+                .expect("Failed to execute command");
         }
     })
 }
