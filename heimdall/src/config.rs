@@ -5,6 +5,7 @@ use serde::Deserialize;
 #[derive(Deserialize, Debug)]
 pub struct Binding {
     pub key: String,
+    // TODO: Make this optional,
     pub modifiers: Vec<String>,
     pub command: String,
 }
@@ -12,8 +13,12 @@ pub struct Binding {
 // To string
 impl ToString for Binding {
     fn to_string(&self) -> String {
-        let modifiers = &self.modifiers.join("+");
-        format!("{}+Key{}", modifiers, self.key)
+        let modifiers = self.modifiers.join("+");
+        if modifiers.is_empty() {
+            format!("Key{}", self.key.to_uppercase())
+        } else {
+            format!("{}+Key{}", modifiers, self.key.to_uppercase())
+        }
     }
 }
 
