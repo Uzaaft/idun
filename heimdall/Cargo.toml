@@ -12,7 +12,9 @@ global-hotkey = "0.1.2"
 serde = "1.0.152"
 serde_json = "1.0.93"
 toml = "0.7.2"
-winit = "0.28.2"
+tracing = { version = "0.1.37", default-features = false }
+tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
+winit = { version = "0.28.2", default-features = false }
 
 [dependencies.clap]
 version = "4.1.8"
