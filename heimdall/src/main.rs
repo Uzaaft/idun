@@ -19,9 +19,6 @@ fn main() {
 
     let hotkeys_manager = GlobalHotKeyManager::new().unwrap();
 
-    let hotkey3 = HotKey::new(None, Code::KeyE);
-    let user_config = Config::read_config().unwrap();
-    let key_command_map: HashMap<u32, String> = user_config
     let key_command_map: HashMap<u32, String> = Config::read_config()
         .unwrap()
         .bindings
