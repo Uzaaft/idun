@@ -14,21 +14,6 @@ use global_hotkey::{
 };
 use winit::event_loop::{ControlFlow, EventLoopBuilder};
 
-fn register_keys(hotkeys_manager: GlobalHotKeyManager) -> Result<HashMap<u32, String>> {
-    let user_config = Config::read_config()?;
-    let key_command_map = user_config
-        .bindings
-        .iter()
-        .map(|hotkey| {
-            let key: HotKey = hotkey.to_string().parse().unwrap();
-            dbg!(&key);
-            hotkeys_manager.register(key).unwrap();
-            (key.id(), hotkey.command.to_string())
-        })
-        .collect();
-    Ok(key_command_map)
-}
-
 fn main() {
     let event_loop = EventLoopBuilder::new().build();
 
@@ -37,6 +22,8 @@ fn main() {
     let hotkey3 = HotKey::new(None, Code::KeyE);
     let user_config = Config::read_config().unwrap();
     let key_command_map: HashMap<u32, String> = user_config
+    let key_command_map: HashMap<u32, String> = Config::read_config()
+        .unwrap()
         .bindings
         .iter()
         .map(|hotkey| {
@@ -50,16 +37,9 @@ fn main() {
     let global_hotkey_channel = GlobalHotKeyEvent::receiver();
 
     event_loop.run(move |_event, _, control_flow| {
-        *control_flow = ControlFlow::Poll;
+        control_flow.set_wait();
 
         if let Ok(event) = global_hotkey_channel.try_recv() {
-            println!("Received hotkey event: {:?}", event);
-            println!("Command: {:?}", key_command_map.get(&event.id));
-            Command::new("sh")
-                .arg("-c")
-                .arg(key_command_map.get(&event.id).unwrap().to_string())
-                .spawn()
-                .expect("Failed to execute command");
         }
     })
 }
