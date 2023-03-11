@@ -1,0 +1,59 @@
+name: Release Heimdall
+
+defaults:
+  run:
+    working-directory: ./heimdall
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Release new version of Heimdall
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'release(heimdall)')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Cache Rust toolchain
+        uses: actions/cache@v2
+        with:
+          path: ~/.cargo
+          key: ${{ runner.os }}-rust-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-rust-
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Build and test
+        run: cargo build --release && cargo test
+
+      - name: Create new release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.sha }}
+          release_name: Release ${{ github.sha }}
+          body: |
+            Release ${{ github.sha }} of ${{ env.CRATE_NAME }}
+          draft: false
+          prerelease: false
+
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./target/release/${{ env.CRATE_NAME }}
+          asset_name: ${{ env.CRATE_NAME }}-${{ github.sha }}.tar.gz
+          asset_content_type: application/gzip
